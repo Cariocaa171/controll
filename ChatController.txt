@@ -1,0 +1,52 @@
+// chatController.js
+class ChatController {
+    // ... outros métodos
+
+    async getMessages(req, res) {
+        try {
+            const messages = await Message.find(); // Supondo que você tenha um modelo Message
+            res.status(200).json(messages);
+        } catch (error) {
+            res.status(500).json({ error: 'Erro ao buscar mensagens' });
+        }
+    }
+}
+
+// Não esqueça de adicionar a rota
+const express = require('express');
+const router = express.Router();
+const chatController = new ChatController();
+
+router.get('/messages', (req, res) => chatController.getMessages(req, res));
+
+module.exports = router;
+
+// chat.js
+async function fetchMessages() {
+    try {
+        const response = await fetch('http://localhost:3000/messages'); // Ajuste a URL conforme necessário
+        if (!response.ok) {
+            throw new Error('Erro ao buscar mensagens');
+        }
+        const messages = await response.json();
+        displayMessages(messages);
+    } catch (error) {
+        console.error('Erro:', error);
+    }
+}
+
+function displayMessages(messages) {
+    const chatContainer = document.getElementById('chatContainer'); // Supondo que você tenha um elemento com esse ID
+    chatContainer.innerHTML = ''; // Limpa o conteúdo anterior
+
+    messages.forEach(message => {
+        const messageElement = document.createElement('div');
+        messageElement.textContent = message.text; // Ajuste conforme a estrutura do seu objeto de mensagem
+        chatContainer.appendChild(messageElement);
+    });
+}
+
+// Chame a função fetchMessages quando a página carregar
+document.addEventListener('DOMContentLoaded', fetchMessages);
+
+
